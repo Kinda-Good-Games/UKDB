@@ -12,6 +12,11 @@ namespace Klassen_Discord_Bot
 {
     class SlashCommandHandler
     {
+        private Program origin;
+        public SlashCommandHandler(Program program)
+        {
+            origin = program;
+        }
         public async Task Cheese(SocketSlashCommand command)
         {
             await command.RespondAsync("cheese.");
@@ -68,6 +73,23 @@ namespace Klassen_Discord_Bot
                 s += " now im poorer than @Chipstyp_8109";
             }
             await command.RespondAsync(s);
+        }
+        public async Task Guilds(SocketSlashCommand command)
+        {
+            string guilds = "";
+            foreach (var guild in origin.client.Guilds)
+            {
+                guilds += guild;
+            }
+
+            await command.RespondAsync(embed: new EmbedBuilder()
+            {
+                Title = "Server List",
+                Description = "these are my servers: " + guilds,
+                Color = Color.Blue,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.Build());
         }
         public async Task UntisHomework(SocketSlashCommand command)
         {
@@ -189,6 +211,9 @@ namespace Klassen_Discord_Bot
         {
             switch (command.Data.Name)
             {
+                case "getserverlist":
+                    await Guilds(command);
+                break;
                 case "boobies":
                     await ForKarlo(command);
                     break;
@@ -205,7 +230,7 @@ namespace Klassen_Discord_Bot
                     await SayHi(command);
                     break;
                 case "cheese":
-                        await Cheese(command);
+                    await Cheese(command);
                     break;
                 case "alert":
                     await command.RespondAsync("Haha, nö.");

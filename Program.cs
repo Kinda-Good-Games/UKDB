@@ -18,8 +18,8 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GTlEE1.F1pKH5Qv6pHObRB1yw2g3G6f9WuRcFlP4BjJa4";
-        private DiscordSocketClient client;
+        private const string TOKEN = "ENTER-TOKEN-HERE";
+        public DiscordSocketClient client { get; private set; }
         #endregion
 
         private CommandService commands;
@@ -39,7 +39,7 @@ namespace Klassen_Discord_Bot
 
             client = new DiscordSocketClient();
 
-            slashCommandHandler = new SlashCommandHandler();
+            slashCommandHandler = new SlashCommandHandler(this);
 
             client.Ready += Client_Ready;
             client.Log += Log;
@@ -63,25 +63,46 @@ namespace Klassen_Discord_Bot
             var guildCommand = new SlashCommandBuilder();
 
             // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-            guildCommand.WithName("lennyface");
-
-            // Descriptions can have a max length of 100.
-            guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
 
 
-            guildCommand.WithName("yesorno");
-            guildCommand.WithDescription("responds either with yes or no");
+            guildCommand.WithName("getserverlist");
+            guildCommand.WithDescription("gets all servers i am on");
+            await guild.CreateApplicationCommandAsync(guildCommand.Build());
+
+            ///* 
+              guildCommand.WithName("lennyface");
+
+             // Descriptions can have a max length of 100.
+             guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
 
 
-            guildCommand.WithName("cheese");
-            guildCommand.WithDescription("cheese.");
+             guildCommand.WithName("yesorno");
+             guildCommand.WithDescription("responds either with yes or no");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
 
 
-            guildCommand.WithName("ping");
-            guildCommand.WithDescription("answers pong");
+             guildCommand.WithName("cheese");
+             guildCommand.WithDescription("cheese.");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
 
-            guildCommand.WithName("sayhi");
-            guildCommand.WithDescription("Hey!");
+
+             guildCommand.WithName("ping");
+             guildCommand.WithDescription("answers pong");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
+
+             guildCommand.WithName("sayhi");
+             guildCommand.WithDescription("Hey!");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
+             guildCommand.WithName("cookies");
+             guildCommand.WithDescription("yummy!");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
+
+
+             guildCommand.WithName("lennyface");
+             guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
+             await guild.CreateApplicationCommandAsync(guildCommand.Build());
+            //*/
 
             // Let's do our global command
             var globalCommand = new SlashCommandBuilder();
