@@ -43,6 +43,20 @@ namespace Klassen_Discord_Bot
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             }.Build());
         }
+        public async Task ForKarlo(SocketSlashCommand command)
+        {
+            var embed = new EmbedBuilder()
+            {
+                Description = "wonderful stuff, just for " + command.User,
+                Title = "Good Stuff",
+                Color = Color.Red,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            };
+            embed.AddField("Field title",
+                "Here is your [link](https://youtu.be/dQw4w9WgXcQ)!");
+            await command.RespondAsync("Here you go!", embed: embed.Build());
+        }
         public async Task UntisClasses(SocketSlashCommand command)
         {
             await command.RespondAsync("Getting Class data...");
@@ -52,7 +66,7 @@ namespace Klassen_Discord_Bot
             await client_wu.LoginAsync();
 
             DateTime wantedDay = DateTime.Now;
-            if (command.Data.Options.Where(x=>x.Name == "days") != null)
+            if (command.Data.Options.Where(x => x.Name == "days") != null)
             {
                 var dayData = command.Data.Options.Where(x => x.Name == "days");
                 wantedDay = DateTime.Now.AddDays((long)command.Data.Options.First().Value);
@@ -107,7 +121,7 @@ namespace Klassen_Discord_Bot
             {
                 Color = Color.Orange,
                 Timestamp = DateTime.Now,
-                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong"}
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             };
 
             embedBuilder.AddField("TIMETABLE", classText);
@@ -118,6 +132,9 @@ namespace Klassen_Discord_Bot
         {
             switch (command.Data.Name)
             {
+                case "boobies":
+                    await ForKarlo(command);
+                    break;
                 case "alert":
                     await command.RespondAsync("Haha, nö.");
                     break;

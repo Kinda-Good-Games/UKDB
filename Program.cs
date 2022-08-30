@@ -18,7 +18,7 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "MTAxMzQ1NjM2NzM2Mjc4MTMyNQ.GPuuoG.XqEiq0lEvI920msrYBTWkk59rIjxQ92VY0UoFc";
+        private const string TOKEN = "ENTER-TOKEN-HERE";
         private DiscordSocketClient client;
         #endregion
 
@@ -63,12 +63,10 @@ namespace Klassen_Discord_Bot
             var guildCommand = new SlashCommandBuilder();
 
             // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-            guildCommand.WithName("untisclasses");
+            guildCommand.WithName("boobies");
 
             // Descriptions can have a max length of 100.
-            guildCommand.WithDescription("view the classes for today");
-
-            guildCommand.AddOption("days", ApplicationCommandOptionType.Integer,"Gets added towards the current date to the timetable");
+            guildCommand.WithDescription("extra nur für karlo");
 
             // Let's do our global command
             var globalCommand = new SlashCommandBuilder();
