@@ -11,23 +11,27 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using WebUntis.Net;
 using WebUntisSharp;
+using Klassen_Discord_Bot.WebServer;
 
 namespace Klassen_Discord_Bot
 {
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "MTAxMzQ1NjM2NzM2Mjc4MTMyNQ.GFm1yx.58SSO_wJIEGoMdOVHEkT4VJ_h4f6mPVbStiJL4";
+        private const string TOKEN = "MTAxMzQ1NjM2NzM2Mjc4MTMyNQ.GPuuoG.XqEiq0lEvI920msrYBTWkk59rIjxQ92VY0UoFc";
         private DiscordSocketClient client;
         #endregion
 
         private CommandService commands;
         private SlashCommandHandler slashCommandHandler;
+        private HttpServer server;
 
         public static Task Main(string[] args) => new Program().MainAsync();
 
         public async Task MainAsync()
         {
+
+            Console.WriteLine("Starting bot");
             DiscordSocketConfig config = new DiscordSocketConfig()
             {
                 UseInteractionSnowflakeDate = false,
@@ -47,6 +51,7 @@ namespace Klassen_Discord_Bot
 
             await InstallCommandsAsync();
 
+            server = new HttpServer();
             await Task.Delay(-1);
         }
         public async Task Client_Ready()

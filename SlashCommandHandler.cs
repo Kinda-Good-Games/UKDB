@@ -52,8 +52,9 @@ namespace Klassen_Discord_Bot
             await client_wu.LoginAsync();
 
             DateTime wantedDay = DateTime.Now;
-            if (command.Data.Options.First() != null && command.Data.Options.First().Name == "days")
+            if (command.Data.Options.Where(x=>x.Name == "days") != null)
             {
+                var dayData = command.Data.Options.Where(x => x.Name == "days");
                 wantedDay = DateTime.Now.AddDays((long)command.Data.Options.First().Value);
             }
 
