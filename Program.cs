@@ -18,7 +18,7 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "ENTER-TOKEN-HERE";
+        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GTlEE1.F1pKH5Qv6pHObRB1yw2g3G6f9WuRcFlP4BjJa4";
         private DiscordSocketClient client;
         #endregion
 
@@ -67,6 +67,21 @@ namespace Klassen_Discord_Bot
 
             // Descriptions can have a max length of 100.
             guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
+
+
+            guildCommand.WithName("yesorno");
+            guildCommand.WithDescription("responds either with yes or no");
+
+
+            guildCommand.WithName("cheese");
+            guildCommand.WithDescription("cheese.");
+
+
+            guildCommand.WithName("ping");
+            guildCommand.WithDescription("answers pong");
+
+            guildCommand.WithName("sayhi");
+            guildCommand.WithDescription("Hey!");
 
             // Let's do our global command
             var globalCommand = new SlashCommandBuilder();

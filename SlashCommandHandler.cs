@@ -12,6 +12,34 @@ namespace Klassen_Discord_Bot
 {
     class SlashCommandHandler
     {
+        public async Task Cheese(SocketSlashCommand command)
+        {
+            await command.RespondAsync("cheese.");
+        }
+
+        public async Task Ping(SocketSlashCommand command)
+        {
+            await command.RespondAsync("pong");
+        }
+        public async Task SayHi(SocketSlashCommand command)
+        {
+            await command.RespondAsync("Hi My Friend");
+        }
+        public async Task NoOrYes(SocketSlashCommand command)
+        {
+            Random rndm = new Random();
+            int i = rndm.Next(0, 2);
+            string reply;
+            if (i == 0)
+            {
+                reply = "Yes";
+            }
+            else
+            {
+                reply = "No";
+            }
+            await command.RespondAsync(reply);
+        }
         public async Task Lenny(SocketSlashCommand command)
         {
             await command.RespondAsync("( ͡° ͜ʖ ͡°)");
@@ -163,6 +191,21 @@ namespace Klassen_Discord_Bot
             {
                 case "boobies":
                     await ForKarlo(command);
+                    break;
+                case "yesorno":
+                    await NoOrYes(command);
+                    break;
+                case "cookies":
+                    await Cookies(command);
+                    break;
+                case "lennyface":
+                    await Lenny(command);
+                    break;
+                case "sayhi":
+                    await SayHi(command);
+                    break;
+                case "cheese":
+                        await Cheese(command);
                     break;
                 case "alert":
                     await command.RespondAsync("Haha, nö.");
