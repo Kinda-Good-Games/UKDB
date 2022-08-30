@@ -12,6 +12,35 @@ namespace Klassen_Discord_Bot
 {
     class SlashCommandHandler
     {
+        public async Task Lenny(SocketSlashCommand command)
+        {
+            await command.RespondAsync("( ͡° ͜ʖ ͡°)");
+        }
+        public async Task Cookies(SocketSlashCommand command)
+        {
+            Random rnd = new Random();
+
+            int i = rnd.Next(-1, 65);
+            string s = "take some cookies: ";
+            for (int x = 0; x < i; x++)
+            {
+                s += ":cookie:";
+            }
+            s += $"You have got {i} cookies!";
+            if (i == 0)
+            {
+                s = "Sorry i´m out of cookies :sad:";
+            }
+            if (i == 1)
+            {
+                s += "L bro. just 1";
+            }
+            else if (i == 64)
+            {
+                s += " now im poorer than @Chipstyp_8109";
+            }
+            await command.RespondAsync(s);
+        }
         public async Task UntisHomework(SocketSlashCommand command)
         {
             await command.RespondAsync("Getting homework data...");

@@ -63,10 +63,10 @@ namespace Klassen_Discord_Bot
             var guildCommand = new SlashCommandBuilder();
 
             // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-            guildCommand.WithName("boobies");
+            guildCommand.WithName("lennyface");
 
             // Descriptions can have a max length of 100.
-            guildCommand.WithDescription("extra nur für karlo");
+            guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
 
             // Let's do our global command
             var globalCommand = new SlashCommandBuilder();
