@@ -7,6 +7,7 @@ using Discord.Net;
 using Discord.WebSocket;
 using WebUntis.Net;
 using Discord;
+using Klassen_Discord_Bot.Exceptions;
 
 namespace Klassen_Discord_Bot
 {
@@ -128,7 +129,7 @@ namespace Klassen_Discord_Bot
             {
                 Description = "wonderful stuff, just for " + command.User,
                 Title = "Good Stuff",
-                Color = Color.Red,
+                Color = Color.Gold,
                 Timestamp = DateTime.Now,
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             };
@@ -243,6 +244,9 @@ namespace Klassen_Discord_Bot
                     break;
                 case "untishomework":
                     await UntisHomework(command);
+                    break;
+                default:
+                    throw new CommandNotImplementedException();
                     break;
             }
         }

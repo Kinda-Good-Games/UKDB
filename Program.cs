@@ -9,7 +9,6 @@ using Discord.Commands;
 using Discord.Net;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using WebUntis.Net;
 using WebUntisSharp;
 using Klassen_Discord_Bot.WebServer;
 
@@ -18,7 +17,7 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "ENTER-TOKEN-HERE";
+        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GhGSoh.XWXYdD8EiARsjxf1_0HnryK994qGBZROwEfoH8";
         public DiscordSocketClient client { get; private set; }
         #endregion
 
@@ -26,99 +25,181 @@ namespace Klassen_Discord_Bot
         private SlashCommandHandler slashCommandHandler;
         private HttpServer server;
 
+        private SocketGuild classGuild;
+        private ISocketMessageChannel ukdbChannel;
+
+        /*
+         Color Codes:
+            Orange  -   WebUntis
+            Red     -   Error
+            Blue    -   Bot Stats
+            Gold    -   Fun Commands
+         */
+
         public static Task Main(string[] args) => new Program().MainAsync();
 
         public async Task MainAsync()
         {
-
-            Console.WriteLine("Starting bot");
-            DiscordSocketConfig config = new DiscordSocketConfig()
+            try
             {
-                UseInteractionSnowflakeDate = false,
-            };
+                Console.WriteLine("Starting the discord bot, please wait... ");
+                DiscordSocketConfig config = new()
+                {
+                    UseInteractionSnowflakeDate = false,
+                };
 
-            client = new DiscordSocketClient();
+                client = new DiscordSocketClient();
 
-            slashCommandHandler = new SlashCommandHandler(this);
+                slashCommandHandler = new SlashCommandHandler(this);
 
-            client.Ready += Client_Ready;
-            client.Log += Log;
+                client.Ready += Client_Ready;
+                client.Log += Log;
+                client.LoggedOut += LogOut;
 
-            commands = new CommandService();
+                commands = new CommandService();
 
-            await client.LoginAsync(TokenType.Bot, TOKEN);
-            await client.StartAsync();
+                await client.LoginAsync(TokenType.Bot, TOKEN);
+                await client.StartAsync();
 
-            await InstallCommandsAsync();
+                await InstallCommandsAsync();
 
-            server = new HttpServer();
-            await Task.Delay(-1);
+                server = new HttpServer();
+                await Task.Delay(-1);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ukdbChannel != null);
+
+                if (ukdbChannel != null)
+                {
+                    var embed = new EmbedBuilder()
+                    {
+                        Title = "An Error occured!",
+                        Description = "Please report this to the developer!",
+                        Color = Color.Red,
+                        Timestamp = DateTime.Now,
+                        Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" },
+                    };
+
+                    var trace = new System.Diagnostics.StackTrace(ex, true);
+
+                    embed.AddField(ex.GetType().Name, ex.Message);
+                    embed.AddField("Stack Trace", trace.ToString());
+                    await ukdbChannel.SendMessageAsync(embed: embed.Build(), flags: MessageFlags.Urgent);
+                }
+                Console.WriteLine(ex);
+            }
+        }
+        public async Task LogOut()
+        {
+            await ukdbChannel.SendMessageAsync(embed: new EmbedBuilder()
+            {
+                Title = "Good Morning!",
+                Description = "I'm online now! You can use /[command name] to execute commands",
+                Color = Color.Blue,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.Build());
         }
         public async Task Client_Ready()
         {
+            classGuild = client.GetGuild(1011027844350103723);
+            foreach (var item in classGuild.Channels)
+            {
+                if (item.Name == "ukdb-channel") { ukdbChannel = (ISocketMessageChannel)item; break; }
+            }
+            Console.WriteLine($"Logged in with {client.Latency} ms latency");
+
+            await ukdbChannel.SendMessageAsync(embed: new EmbedBuilder()
+            {
+                Title = "Good Morning!",
+                Description = "I'm online now! You can use /[command name] to execute commands",
+                Color = Color.Blue,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.Build());
+
+            await Task.Delay(1);
+
+            await CreateSlashCommands();
+        }
+        private async Task CreateSlashCommands()
+        {
             // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
-            var guild = client.GetGuild(1011027844350103723);
-
-            // Next, lets create our slash command builder. This is like the embed builder but for slash commands.
-            var guildCommand = new SlashCommandBuilder();
-
-            // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-
-
-            guildCommand.WithName("getserverlist");
-            guildCommand.WithDescription("gets all servers i am on");
-            await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-            ///* 
-              guildCommand.WithName("lennyface");
-
-             // Descriptions can have a max length of 100.
-             guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-
-             guildCommand.WithName("yesorno");
-             guildCommand.WithDescription("responds either with yes or no");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-
-             guildCommand.WithName("cheese");
-             guildCommand.WithDescription("cheese.");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-
-             guildCommand.WithName("ping");
-             guildCommand.WithDescription("answers pong");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-             guildCommand.WithName("sayhi");
-             guildCommand.WithDescription("Hey!");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-             guildCommand.WithName("cookies");
-             guildCommand.WithDescription("yummy!");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-
-
-             guildCommand.WithName("lennyface");
-             guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
-             await guild.CreateApplicationCommandAsync(guildCommand.Build());
-            //*/
-
-            // Let's do our global command
-            var globalCommand = new SlashCommandBuilder();
-            globalCommand.WithName("first-global-command");
-            globalCommand.WithDescription("This is my first global slash command");
-
             try
             {
-                // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
-                await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                var guildCommand = new SlashCommandBuilder();
 
-                // With global commands we don't need the guild.
-                await client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
-                // Using the ready event is a simple implementation for the sake of the example. Suitable for testing and development.
-                // For a production bot, it is recommended to only run the CreateGlobalApplicationCommandAsync() once for each command.
-                Console.WriteLine("Done!");
+                // Note: Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
+
+                #region command declaration
+
+                /*guildCommand.WithName("untisclasses");
+                guildCommand.WithDescription("gets the time table of a certain day");
+                guildCommand.AddOption("days", ApplicationCommandOptionType.Integer, "gets added towards the current date to the timetable");
+                await guild.CreateApplicationCommandAsync(guildCommand.Build());*/
+
+
+
+                guildCommand = guildCommand.WithName("about");
+                guildCommand = guildCommand.WithDescription("get information about me!");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+
+                guildCommand = new();
+
+                guildCommand.WithName("getserverlist");
+                guildCommand.WithDescription("gets all servers i am on");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+                ///* 
+                guildCommand.WithName("lennyface");
+
+                // Descriptions can have a max length of 100.
+                guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+
+                guildCommand.WithName("yesorno");
+                guildCommand.WithDescription("responds either with yes or no");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+
+                guildCommand.WithName("cheese");
+                guildCommand.WithDescription("cheese.");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+
+                guildCommand.WithName("ping");
+                guildCommand.WithDescription("answers pong");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+                guildCommand.WithName("sayhi");
+                guildCommand.WithDescription("Hey!");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+                guildCommand.WithName("cookies");
+                guildCommand.WithDescription("yummy!");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+
+
+                guildCommand.WithName("lennyface");
+                guildCommand.WithDescription("( ͡° ͜ʖ ͡°)");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
+                //*/
+
+                // Let's do our global command
+                var globalCommand = new SlashCommandBuilder();
+                globalCommand.WithName("first-global-command");
+                globalCommand.WithDescription("This is my first global slash command");
+
+                #endregion
             }
             catch (HttpException exception)
             {
@@ -131,7 +212,34 @@ namespace Klassen_Discord_Bot
         }
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            await slashCommandHandler.HandleSlashCommand(command);
+            try
+            {
+                await slashCommandHandler.HandleSlashCommand(command);
+            }
+            catch (Exception e)
+            {
+                var embed = new EmbedBuilder()
+                {
+                    Title = "An Error occured!",
+                    Description = "Please report this to the developer!",
+                    Color = Color.Red,
+                    Timestamp = DateTime.Now,
+                    Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" },
+                };
+
+                var trace = new System.Diagnostics.StackTrace(e, true);
+
+                embed.AddField(e.GetType().Name, e.Message);
+                embed.AddField("Stack Trace", trace.ToString());
+                if (!command.HasResponded)
+                {
+                    await command.RespondAsync("Oh no! seems like there was an error while executing the command!", embed: embed.Build());
+                }
+                else
+                {
+                    await command.FollowupAsync("Oh no! seems like there was an error while executing the command!", embed: embed.Build());
+                }
+            }
         }
         public async Task InstallCommandsAsync()
         {
@@ -157,6 +265,12 @@ namespace Klassen_Discord_Bot
             // Don't process the command if it was a system message
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
+
+            if (message.Content == "hi")
+            {
+                await message.ReplyAsync("Hi!");
+            }
+
 
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
