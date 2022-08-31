@@ -17,7 +17,7 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GhGSoh.XWXYdD8EiARsjxf1_0HnryK994qGBZROwEfoH8";
+        private const string TOKEN = "ENTER-TOKEN";
         public DiscordSocketClient client { get; private set; }
         #endregion
 
@@ -33,7 +33,7 @@ namespace Klassen_Discord_Bot
             Orange  -   WebUntis
             Red     -   Error
             Blue    -   Bot Stats
-            Gold    -   Fun Commands
+            Green    -   Fun Commands
          */
 
         public static Task Main(string[] args) => new Program().MainAsync();
@@ -141,6 +141,13 @@ namespace Klassen_Discord_Bot
 
 
 
+                guildCommand = guildCommand.WithName("say");
+                guildCommand = guildCommand.WithDescription("lemme say something");
+                guildCommand.AddOption("content", ApplicationCommandOptionType.String, "what I am going to say", isRequired:true);
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+
+                guildCommand = new();
+
                 guildCommand = guildCommand.WithName("about");
                 guildCommand = guildCommand.WithDescription("get information about me!");
                 await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
@@ -230,7 +237,13 @@ namespace Klassen_Discord_Bot
                 var trace = new System.Diagnostics.StackTrace(e, true);
 
                 embed.AddField(e.GetType().Name, e.Message);
-                embed.AddField("Stack Trace", trace.ToString());
+                string traceText = trace.ToString();
+                if (traceText.Length > 1024)
+                {
+                    traceText = traceText.Remove(1021);
+                    traceText += "...";
+                }
+                embed.AddField("Stack Trace", traceText);
                 if (!command.HasResponded)
                 {
                     await command.RespondAsync("Oh no! seems like there was an error while executing the command!", embed: embed.Build());

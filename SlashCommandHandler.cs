@@ -123,13 +123,25 @@ namespace Klassen_Discord_Bot
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             }.Build());
         }
+        public async Task Say(SocketSlashCommand command)
+        {
+            await command.DeferAsync();
+            await command.FollowupAsync(embed: new EmbedBuilder()
+            {
+                Description = (string)command.Data.Options.First(),
+                //Title = "Here, a glorifying message from our lord and savior",
+                Color = Color.Green,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.Build());
+        }
         public async Task ForKarlo(SocketSlashCommand command)
         {
             var embed = new EmbedBuilder()
             {
                 Description = "wonderful stuff, just for " + command.User,
                 Title = "Good Stuff",
-                Color = Color.Gold,
+                Color = Color.Green,
                 Timestamp = DateTime.Now,
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             };
@@ -212,6 +224,9 @@ namespace Klassen_Discord_Bot
         {
             switch (command.Data.Name)
             {
+                case "say":
+                    await Say(command);
+                    break;
                 case "getserverlist":
                     await Guilds(command);
                 break;
