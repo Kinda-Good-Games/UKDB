@@ -8,8 +8,9 @@ using Discord.WebSocket;
 using WebUntis.Net;
 using Discord;
 using Klassen_Discord_Bot.Exceptions;
+using Discord.Commands;
 
-namespace Klassen_Discord_Bot
+namespace Klassen_Discord_Bot.Handler
 {
     class SlashCommandHandler
     {
@@ -17,6 +18,21 @@ namespace Klassen_Discord_Bot
         public SlashCommandHandler(Program program)
         {
             origin = program;
+        }
+        #region Commands
+        public async Task ButtonTest(SocketSlashCommand command)
+        {
+            var builder = new ComponentBuilder()
+                .WithButton("This is a test", "test-button");
+
+            await command.RespondAsync("Here is a button!", embed: new EmbedBuilder()
+            {
+                Title = "This is a test command",
+                Description = "Try pressing the button and see what happens!",
+                Color = Color.DarkRed,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.Build(), components: builder.Build());
         }
         public async Task Cheese(SocketSlashCommand command)
         {
@@ -220,16 +236,20 @@ namespace Klassen_Discord_Bot
             await command.FollowupAsync($"The time table for the following date: {wantedDay}", embed: embedBuilder.Build());
 
         }
+        #endregion
         public async Task HandleSlashCommand(SocketSlashCommand command)
         {
             switch (command.Data.Name)
             {
+                case "buttontest":
+                    await ButtonTest(command);
+                    break;
                 case "say":
                     await Say(command);
                     break;
                 case "getserverlist":
                     await Guilds(command);
-                break;
+                    break;
                 case "boobies":
                     await ForKarlo(command);
                     break;

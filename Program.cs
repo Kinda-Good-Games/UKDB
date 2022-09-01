@@ -11,15 +11,17 @@ using Discord.WebSocket;
 using Newtonsoft.Json;
 using WebUntisSharp;
 using Klassen_Discord_Bot.WebServer;
+using Klassen_Discord_Bot.Handler;
 
 namespace Klassen_Discord_Bot
 {
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "ENTER-TOKEN";
-        public DiscordSocketClient client { get; private set; }
+        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GDYg1f.YVtuzxF9gHSy68uH5KSutJu3uSwjf084nC-77I";
         #endregion
+        public DiscordSocketClient client { get; private set; }
+        public ButtonHandler buttonHandler { get; private set; }
 
         private CommandService commands;
         private SlashCommandHandler slashCommandHandler;
@@ -33,7 +35,7 @@ namespace Klassen_Discord_Bot
             Orange  -   WebUntis
             Red     -   Error
             Blue    -   Bot Stats
-            Green    -   Fun Commands
+            Green   -   Fun Commands
          */
 
         public static Task Main(string[] args) => new Program().MainAsync();
@@ -56,6 +58,10 @@ namespace Klassen_Discord_Bot
                 client.Log += Log;
                 client.LoggedOut += LogOut;
 
+                buttonHandler = new(this);
+
+                client.ButtonExecuted += buttonHandler.HandleInteraction;
+
                 commands = new CommandService();
 
                 await client.LoginAsync(TokenType.Bot, TOKEN);
@@ -68,27 +74,29 @@ namespace Klassen_Discord_Bot
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ukdbChannel != null);
-
-                if (ukdbChannel != null)
-                {
-                    var embed = new EmbedBuilder()
-                    {
-                        Title = "An Error occured!",
-                        Description = "Please report this to the developer!",
-                        Color = Color.Red,
-                        Timestamp = DateTime.Now,
-                        Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" },
-                    };
-
-                    var trace = new System.Diagnostics.StackTrace(ex, true);
-
-                    embed.AddField(ex.GetType().Name, ex.Message);
-                    embed.AddField("Stack Trace", trace.ToString());
-                    await ukdbChannel.SendMessageAsync(embed: embed.Build(), flags: MessageFlags.Urgent);
-                }
-                Console.WriteLine(ex);
+                await HandleException(ex);
             }
+        }
+        public async Task HandleException(Exception ex)
+        {
+            if (ukdbChannel != null)
+            {
+                var embed = new EmbedBuilder()
+                {
+                    Title = "An Error occured!",
+                    Description = "Please report this to the developer!",
+                    Color = Color.Red,
+                    Timestamp = DateTime.Now,
+                    Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" },
+                };
+
+                var trace = new System.Diagnostics.StackTrace(ex, true);
+
+                embed.AddField(ex.GetType().Name, ex.Message);
+                embed.AddField("Stack Trace", trace.ToString());
+                await ukdbChannel.SendMessageAsync(embed: embed.Build(), flags: MessageFlags.Urgent);
+            }
+            Console.WriteLine(ex);
         }
         public async Task LogOut()
         {
@@ -139,7 +147,10 @@ namespace Klassen_Discord_Bot
                 guildCommand.AddOption("days", ApplicationCommandOptionType.Integer, "gets added towards the current date to the timetable");
                 await guild.CreateApplicationCommandAsync(guildCommand.Build());*/
 
+                guildCommand = guildCommand.WithName("buttontest");
+                guildCommand = guildCommand.WithDescription("a test button");
 
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
 
                 guildCommand = guildCommand.WithName("say");
                 guildCommand = guildCommand.WithDescription("lemme say something");
