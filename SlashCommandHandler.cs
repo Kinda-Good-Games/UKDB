@@ -20,6 +20,56 @@ namespace Klassen_Discord_Bot.Handler
             origin = program;
         }
         #region Commands
+        public async Task TestMenu(SocketSlashCommand command)
+        {
+            var menuBuilder = new SelectMenuBuilder()
+                .WithPlaceholder("Select an option")
+                .WithCustomId("menu-1")
+                .WithMinValues(1)
+                .WithMaxValues(1)
+                .AddOption("Option A", "opt-a", "Option B is lying!")
+                .AddOption("Option B", "opt-b", "Option A is telling the truth!");
+            var row = new ActionRowBuilder();
+            row.AddComponent((IMessageComponent)menuBuilder);
+
+            var builder = new ComponentBuilder();
+
+            await command.RespondAsync("Whos really lying?", components: builder.Build());
+        }
+        public async Task SquareRootTrainer(SocketSlashCommand command)
+        {
+            int streak = 0;
+            var components = new ComponentBuilder();
+
+            int rootRange = 20;
+
+            var menuBuilder = new SelectMenuBuilder()
+                .WithPlaceholder("select a option")
+                .WithCustomId("menu-root-trainer")
+                .WithMinValues(1)
+                .WithMaxValues(1);
+
+
+            for (int i = 0; i < rootRange; i++)
+            {
+                menuBuilder.AddOption((i + 1).ToString(), (i + 1).ToString(), "select this if you think the root of the number is " + (i + 1));
+            }
+
+            components.WithSelectMenu(menuBuilder);
+
+
+            var embed = new EmbedBuilder()
+            {
+                Title = "Do you know the answer?",
+                Description = "√" + Math.Pow(new Random().Next(1, rootRange + 1), 2),
+                Color = Color.DarkRed,
+                Timestamp = DateTime.Now,
+                Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
+            }.AddField($"Current Streak : {streak}", "You surely know this!", true); ;
+
+            await command.RespondAsync("Here is a task, can you solve it?!", embed: embed.Build(), components: components.Build());
+        }
+
         public async Task ButtonTest(SocketSlashCommand command)
         {
             var builder = new ComponentBuilder()
@@ -146,7 +196,7 @@ namespace Klassen_Discord_Bot.Handler
             {
                 Description = (string)command.Data.Options.First(),
                 //Title = "Here, a glorifying message from our lord and savior",
-                Color = Color.Green,
+                Color = Color.Gold,
                 Timestamp = DateTime.Now,
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             }.Build());
@@ -157,7 +207,7 @@ namespace Klassen_Discord_Bot.Handler
             {
                 Description = "wonderful stuff, just for " + command.User,
                 Title = "Good Stuff",
-                Color = Color.Green,
+                Color = Color.Gold,
                 Timestamp = DateTime.Now,
                 Footer = new EmbedFooterBuilder() { Text = "Made by Kevin Gong" }
             };
@@ -241,6 +291,12 @@ namespace Klassen_Discord_Bot.Handler
         {
             switch (command.Data.Name)
             {
+                case "roottrainer":
+                    await SquareRootTrainer(command);
+                    break;
+                case "root-trainer":
+                    await SquareRootTrainer(command);
+                    break;
                 case "buttontest":
                     await ButtonTest(command);
                     break;

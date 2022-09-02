@@ -18,10 +18,11 @@ namespace Klassen_Discord_Bot
     class Program
     {
         #region TOKEN
-        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GDYg1f.YVtuzxF9gHSy68uH5KSutJu3uSwjf084nC-77I";
+        private const string TOKEN = "MTAxNDI0ODM2MjU0MDc5Mzg5Ng.GNogPs.NBXhoeTMs5LoL5Gi_1x_6HRAXMfYLVyHkyVN40";
         #endregion
         public DiscordSocketClient client { get; private set; }
         public ButtonHandler buttonHandler { get; private set; }
+        public SelectMenuHandler selectMenuHandler { get; private set; }
 
         private CommandService commands;
         private SlashCommandHandler slashCommandHandler;
@@ -33,9 +34,10 @@ namespace Klassen_Discord_Bot
         /*
          Color Codes:
             Orange  -   WebUntis
-            Red     -   Error
+            Red     -   Error || wrong
             Blue    -   Bot Stats
-            Green   -   Fun Commands
+            Green   -   right
+            Gold    -   Fun Commands
          */
 
         public static Task Main(string[] args) => new Program().MainAsync();
@@ -62,6 +64,10 @@ namespace Klassen_Discord_Bot
 
                 client.ButtonExecuted += buttonHandler.HandleInteraction;
 
+                selectMenuHandler = new(this);
+
+                client.SelectMenuExecuted += selectMenuHandler.HandleSelectMenu;
+
                 commands = new CommandService();
 
                 await client.LoginAsync(TokenType.Bot, TOKEN);
@@ -79,6 +85,7 @@ namespace Klassen_Discord_Bot
         }
         public async Task HandleException(Exception ex)
         {
+            Console.WriteLine(ex);
             if (ukdbChannel != null)
             {
                 var embed = new EmbedBuilder()
@@ -96,7 +103,6 @@ namespace Klassen_Discord_Bot
                 embed.AddField("Stack Trace", trace.ToString());
                 await ukdbChannel.SendMessageAsync(embed: embed.Build(), flags: MessageFlags.Urgent);
             }
-            Console.WriteLine(ex);
         }
         public async Task LogOut()
         {
@@ -146,6 +152,11 @@ namespace Klassen_Discord_Bot
                 guildCommand.WithDescription("gets the time table of a certain day");
                 guildCommand.AddOption("days", ApplicationCommandOptionType.Integer, "gets added towards the current date to the timetable");
                 await guild.CreateApplicationCommandAsync(guildCommand.Build());*/
+
+                guildCommand = guildCommand.WithName("roottrainer");
+                guildCommand = guildCommand.WithDescription("try your best and see if you can impress your maths teacher");
+                await classGuild.CreateApplicationCommandAsync(guildCommand.Build());
+                guildCommand = new();
 
                 guildCommand = guildCommand.WithName("buttontest");
                 guildCommand = guildCommand.WithDescription("a test button");
@@ -236,6 +247,7 @@ namespace Klassen_Discord_Bot
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 var embed = new EmbedBuilder()
                 {
                     Title = "An Error occured!",
